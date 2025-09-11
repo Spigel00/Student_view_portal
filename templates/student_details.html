@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}{{ student.name }} - Student Details{% endblock %}
+
+{% block content %}
+<div class="student-details-container">
+    <header class="student-header">
+        <div class="header-content">
+            <h1>Student Details</h1>
+            <div class="header-actions">
+                <a href="/dashboard" class="back-btn">← Back to Search</a>
+                <a href="/logout" class="logout-btn">Logout</a>
+            </div>
+        </div>
+    </header>
+    
+    <div class="student-info-card">
+        <h2>{{ student.name }}</h2>
+        <div class="student-info-grid">
+            <div class="info-item">
+                <label>Registration Number:</label>
+                <span>{{ student.reg_no }}</span>
+            </div>
+            <div class="info-item">
+                <label>UMIS ID:</label>
+                <span>{{ student.umis_id }}</span>
+            </div>
+            <div class="info-item">
+                <label>EMIS ID:</label>
+                <span>{{ student.emis_id }}</span>
+            </div>
+            <div class="info-item">
+                <label>Aadhar Number:</label>
+                <span>{{ student.aadhar_number }}</span>
+            </div>
+            <div class="info-item">
+                <label>Phone Number:</label>
+                <span>{{ student.phone_number }}</span>
+            </div>
+            <div class="info-item">
+                <label>Address:</label>
+                <span>{{ student.address }}</span>
+            </div>
+        </div>
+    </div>
+    
+    {% if semester_data %}
+    <div class="marks-section">
+        <h2>Academic Performance</h2>
+        
+        {% for sem_data in semester_data %}
+        <div class="semester-card">
+            <h3>Semester {{ sem_data.semester }}</h3>
+            
+            <div class="marks-table-container">
+                <table class="marks-table">
+                    <thead>
+                        <tr>
+                            <th>Subject Code</th>
+                            <th>Subject Name</th>
+                            <th>Internal 1</th>
+                            <th>Internal 2</th>
+                            <th>Best of Two</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for subject in sem_data.subjects %}
+                        <tr>
+                            <td>{{ subject.subject_code }}</td>
+                            <td>{{ subject.subject_name }}</td>
+                            <td>{{ subject.internal_1 }}</td>
+                            <td>{{ subject.internal_2 }}</td>
+                            <td class="best-marks">{{ subject.best_of_two }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="semester-summary">
+                <div class="summary-item">
+                    <label>Total Marks:</label>
+                    <span class="total">{{ sem_data.total_marks }} / {{ sem_data.subjects|length * 50 }}</span>
+                </div>
+                <div class="summary-item">
+                    <label>Percentage:</label>
+                    <span class="percentage">{{ sem_data.percentage }}%</span>
+                </div>
+                <div class="summary-item">
+                    <label>CGPA Cutoff:</label>
+                    <span class="cgpa">{{ sem_data.cgpa_cutoff }}</span>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        
+        <div class="overall-summary">
+            <h3>Overall Performance</h3>
+            {% set total_percentage = semester_data|sum(attribute='percentage') %}
+            {% set avg_percentage = total_percentage / semester_data|length %}
+            {% set overall_cgpa = avg_percentage / 9.5 %}
+            
+            <div class="overall-stats">
+                <div class="stat-item">
+                    <label>Average Percentage:</label>
+                    <span class="avg-percentage">{{ "%.2f"|format(avg_percentage) }}%</span>
+                </div>
+                <div class="stat-item">
+                    <label>Overall CGPA:</label>
+                    <span class="overall-cgpa">{{ "%.2f"|format(overall_cgpa) }}</span>
+                </div>
+                <div class="stat-item">
+                    <label>Semesters Completed:</label>
+                    <span class="semesters">{{ semester_data|length }} / 6</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="no-marks">
+        <h2>No Academic Records Found</h2>
+        <p>No marks have been recorded for this student yet.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

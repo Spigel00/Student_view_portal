@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Student Portal{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <header class="dashboard-header">
+        <h1>Student Details Portal</h1>
+        <div class="header-actions">
+            <span class="welcome">Welcome, Teacher</span>
+            <a href="/logout" class="logout-btn">Logout</a>
+        </div>
+    </header>
+    
+    <div class="search-section">
+        <h2>Search Student</h2>
+        <p>Enter student's Registration Number, UMIS ID, or EMIS ID</p>
+        
+        <form action="/search" method="post" class="search-form">
+            <div class="search-input-group">
+                <input 
+                    type="text" 
+                    name="student_id" 
+                    placeholder="Enter Reg No, UMIS ID, or EMIS ID"
+                    required
+                >
+                <button type="submit">Search</button>
+            </div>
+        </form>
+    </div>
+    
+    <div class="info-section">
+        <h3>Instructions</h3>
+        <ul>
+            <li>Use the search box above to find student details</li>
+            <li>You can search using Registration Number, UMIS ID, or EMIS ID</li>
+            <li>Student marks will be displayed semester-wise</li>
+            <li>CGPA and percentages are automatically calculated</li>
+        </ul>
+        
+        <div class="sample-data">
+            <h4>Sample Student IDs (for testing)</h4>
+            <div class="sample-ids">
+                <div class="sample-id">
+                    <strong>REG001</strong> - John Doe
+                </div>
+                <div class="sample-id">
+                    <strong>UMIS001</strong> - John Doe
+                </div>
+                <div class="sample-id">
+                    <strong>EMIS001</strong> - John Doe
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

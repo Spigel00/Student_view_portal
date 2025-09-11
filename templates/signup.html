@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Teacher Sign Up - Student Portal{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <div class="login-form">
+        <h1>Teacher Sign Up</h1>
+        <p class="subtitle">Create New Account - Student Details Portal</p>
+        
+        {% if error %}
+        <div class="error-message">
+            {{ error }}
+        </div>
+        {% endif %}
+        
+        <form action="/signup" method="post">
+            <div class="form-group">
+                <label for="name">Full Name</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            
+            <button type="submit" class="login-btn">Sign Up</button>
+        </form>
+        
+        <div class="signup-link">
+            <p>Already have an account? <a href="/">Login here</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}
