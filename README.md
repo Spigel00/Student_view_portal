@@ -68,12 +68,34 @@ student_view_portal/
 ## Installation and Setup
 
 ### Prerequisites
-- Python 3.8+
-- MySQL Server
-- Git (optional)
+- Python 3.7+
+- Git (for cloning the repository)
 
-### 1. Install Dependencies
+### Quick Setup (Recommended)
+
+**For Windows:**
 ```bash
+setup.bat
+```
+
+**For macOS/Linux:**
+```bash
+chmod +x setup.sh
+./setup.sh
+```
+
+The setup script will automatically:
+- Create a virtual environment
+- Install all dependencies
+- Set up the environment configuration
+- Initialize the database with sample data
+
+### Manual Setup
+
+### 1. Clone and Install Dependencies
+```bash
+git clone https://github.com/Spigel00/Student_view_portal.git
+cd Student_view_portal
 pip install -r requirements.txt
 ```
 
