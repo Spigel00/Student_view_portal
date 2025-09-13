@@ -12,46 +12,36 @@
         </div>
     </header>
     
-    <div class="search-section">
-        <h2>Search Student</h2>
-        <p>Enter student's Registration Number, UMIS ID, or EMIS ID</p>
+    <div class="menu-section">
+        <h2>Student Management</h2>
+        <p>Choose an option to manage student information</p>
         
-        <form action="/search" method="post" class="search-form">
-            <div class="search-input-group">
-                <input 
-                    type="text" 
-                    name="student_id" 
-                    placeholder="Enter Reg No, UMIS ID, or EMIS ID"
-                    required
-                >
-                <button type="submit">Search</button>
+        <div class="menu-options">
+            <div class="menu-card">
+                <div class="menu-icon">📝</div>
+                <h3>Enter Student Info</h3>
+                <p>Add new student details and marks</p>
+                <a href="/enter-student" class="menu-btn">Enter Student Info</a>
             </div>
-        </form>
+            
+            <div class="menu-card">
+                <div class="menu-icon">👁️</div>
+                <h3>View Student Info</h3>
+                <p>Search and view existing student records</p>
+                <a href="/view-student" class="menu-btn">View Student Info</a>
+            </div>
+        </div>
     </div>
     
     <div class="info-section">
-        <h3>Instructions</h3>
+        <h3>System Overview</h3>
         <ul>
-            <li>Use the search box above to find student details</li>
-            <li>You can search using Registration Number, UMIS ID, or EMIS ID</li>
-            <li>Student marks will be displayed semester-wise</li>
-            <li>CGPA and percentages are automatically calculated</li>
+            <li>Add new students with complete academic records</li>
+            <li>Enter marks for 6 semesters with 7 subjects each</li>
+            <li>System automatically calculates best of two internals</li>
+            <li>View semester-wise performance and overall CGPA</li>
+            <li>Search students by Registration Number, UMIS ID, or EMIS ID</li>
         </ul>
-        
-        <div class="sample-data">
-            <h4>Sample Student IDs (for testing)</h4>
-            <div class="sample-ids">
-                <div class="sample-id">
-                    <strong>REG001</strong> - John Doe
-                </div>
-                <div class="sample-id">
-                    <strong>UMIS001</strong> - John Doe
-                </div>
-                <div class="sample-id">
-                    <strong>EMIS001</strong> - John Doe
-                </div>
-            </div>
-        </div>
     </div>
 </div>
 {% endblock %}

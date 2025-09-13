@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}View Student Info - Student Portal{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="view-container">
+        <header class="view-header">
+            <h1>View Student Information</h1>
+            <div class="header-actions">
+                <a href="/dashboard" class="back-btn">← Back to Dashboard</a>
+                <a href="/logout" class="logout-btn">Logout</a>
+            </div>
+        </header>
+        
+        <div class="search-section">
+            <h2>Search Student</h2>
+            <p>Enter student's Registration Number, UMIS ID, or EMIS ID to view their details</p>
+            
+            {% if error %}
+            <div class="error-message">
+                {{ error }}
+            </div>
+            {% endif %}
+            
+            <form action="/view-student/search" method="post" class="search-form">
+                <div class="search-input-group">
+                    <input 
+                        type="text" 
+                        name="student_id" 
+                        placeholder="Enter Reg No, UMIS ID, or EMIS ID"
+                        value="{{ search_term if search_term else '' }}"
+                        required
+                    >
+                    <button type="submit">Search</button>
+                </div>
+            </form>
+        </div>
+        
+        <div class="info-section">
+            <h3>Search Instructions</h3>
+            <ul>
+                <li>Use the search box above to find student details</li>
+                <li>You can search using Registration Number, UMIS ID, or EMIS ID</li>
+                <li>Student marks will be displayed semester-wise</li>
+                <li>CGPA and percentages are automatically calculated</li>
+                <li>All academic records are shown with best of two internals</li>
+            </ul>
+            
+            <div class="sample-data">
+                <h4>Sample Student IDs (for testing)</h4>
+                <div class="sample-ids">
+                    <div class="sample-id">
+                        <strong>REG001</strong> - John Doe
+                    </div>
+                    <div class="sample-id">
+                        <strong>UMIS001</strong> - John Doe (same student)
+                    </div>
+                    <div class="sample-id">
+                        <strong>EMIS001</strong> - John Doe (same student)
+                    </div>
+                    <div class="sample-id">
+                        <strong>REG002</strong> - Jane Smith
+                    </div>
+                    <div class="sample-id">
+                        <strong>REG003</strong> - Mike Johnson
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="help-section">
+            <h3>Need Help?</h3>
+            <div class="help-cards">
+                <div class="help-card">
+                    <h4>🔍 Search Tips</h4>
+                    <p>Make sure to enter the exact ID as registered. Search is case-sensitive.</p>
+                </div>
+                <div class="help-card">
+                    <h4>📊 Understanding Results</h4>
+                    <p>Results show complete academic history with semester-wise breakdowns and overall performance.</p>
+                </div>
+                <div class="help-card">
+                    <h4>➕ Add New Student</h4>
+                    <p>If you can't find a student, they might not be registered yet. Use "Enter Student Info" to add them.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

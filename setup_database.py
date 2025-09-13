@@ -52,7 +52,8 @@ def create_sample_data():
                 name="John Doe",
                 aadhar_number="123456789012",
                 phone_number="9876543210",
-                address="123 Main Street, City, State"
+                address="123 Main Street, City, State",
+                admission_year=2022  # 3rd year student
             ),
             Student(
                 reg_no="REG002",
@@ -61,7 +62,8 @@ def create_sample_data():
                 name="Jane Smith",
                 aadhar_number="234567890123",
                 phone_number="8765432109",
-                address="456 Oak Avenue, City, State"
+                address="456 Oak Avenue, City, State",
+                admission_year=2023  # 2nd year student
             ),
             Student(
                 reg_no="REG003",
@@ -70,7 +72,8 @@ def create_sample_data():
                 name="Mike Johnson",
                 aadhar_number="345678901234",
                 phone_number="7654321098",
-                address="789 Pine Road, City, State"
+                address="789 Pine Road, City, State",
+                admission_year=2024  # 1st year student
             )
         ]
         

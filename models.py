@@ -3,6 +3,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy.sql import func
 import os
+from datetime import datetime
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -43,6 +44,7 @@ class Student(Base):
     aadhar_number = Column(String(12), unique=True, nullable=False)
     phone_number = Column(String(15), nullable=False)
     address = Column(String(255), nullable=False)
+    admission_year = Column(Integer, nullable=False)  # Year of admission (e.g., 2023)
     
     # Relationship with marks
     marks = relationship("Mark", back_populates="student")
@@ -77,3 +79,74 @@ def get_db():
 # Create tables
 def create_tables():
     Base.metadata.create_all(bind=engine)
+
+# Utility functions for semester calculation
+def calculate_current_semester(admission_year: int, current_date: datetime = None) -> int:
+    """
+    Calculate the current semester based on admission year and current date.
+    
+    Args:
+        admission_year: Year of admission (e.g., 2023)
+        current_date: Current date (defaults to now)
+    
+    Returns:
+        Current semester (1-6), or 6 if graduated
+    """
+    if current_date is None:
+        current_date = datetime.now()
+    
+    current_year = current_date.year
+    current_month = current_date.month
+    
+    # Calculate years since admission
+    years_since_admission = current_year - admission_year
+    
+    # Determine semester within the academic year
+    # Assuming: Jan-Jun = Even semester, Jul-Dec = Odd semester
+    if current_month >= 7:  # July to December (Odd semester)
+        semester_in_year = 1
+    else:  # January to June (Even semester)
+        semester_in_year = 2
+        if current_month <= 6 and years_since_admission > 0:
+            years_since_admission -= 1
+    
+    # Calculate total semester
+    total_semester = (years_since_admission * 2) + semester_in_year
+    
+    # Cap at 6 semesters (3 years)
+    return min(total_semester, 6)
+
+def get_graduation_year(admission_year: int) -> int:
+    """Get graduation year based on admission year (3-year course)"""
+    return admission_year + 3
+
+def is_student_graduated(admission_year: int, current_date: datetime = None) -> bool:
+    """Check if student has graduated"""
+    if current_date is None:
+        current_date = datetime.now()
+    
+    graduation_year = get_graduation_year(admission_year)
+    return current_date.year >= graduation_year
+
+def get_academic_year_info(admission_year: int, current_date: datetime = None) -> dict:
+    """
+    Get comprehensive academic year information for a student.
+    
+    Returns:
+        Dictionary with academic info including current semester, graduation year, etc.
+    """
+    if current_date is None:
+        current_date = datetime.now()
+    
+    current_semester = calculate_current_semester(admission_year, current_date)
+    graduation_year = get_graduation_year(admission_year)
+    is_graduated = is_student_graduated(admission_year, current_date)
+    
+    return {
+        'admission_year': admission_year,
+        'graduation_year': graduation_year,
+        'current_semester': current_semester,
+        'is_graduated': is_graduated,
+        'total_semesters': 6,
+        'available_semesters': list(range(1, current_semester + 1))
+    }

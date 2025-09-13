@@ -30,6 +30,18 @@
                 <span>{{ student.emis_id }}</span>
             </div>
             <div class="info-item">
+                <label>Admission Year:</label>
+                <span>{{ student.admission_year }}</span>
+            </div>
+            <div class="info-item">
+                <label>Graduation Year:</label>
+                <span>{{ student.admission_year + 3 }}</span>
+            </div>
+            <div class="info-item">
+                <label>Current Semester:</label>
+                <span>{{ academic_info.current_semester if academic_info else 'N/A' }}</span>
+            </div>
+            <div class="info-item">
                 <label>Aadhar Number:</label>
                 <span>{{ student.aadhar_number }}</span>
             </div>

@@ -10,22 +10,6 @@ class TeacherCreate(BaseModel):
     password: str
     name: str
 
-class StudentBase(BaseModel):
-    reg_no: str
-    umis_id: str
-    emis_id: str
-    name: str
-    aadhar_number: str
-    phone_number: str
-    address: str
-
-class StudentCreate(StudentBase):
-    pass
-
-class Student(StudentBase):
-    class Config:
-        from_attributes = True
-
 class MarkBase(BaseModel):
     semester: int
     subject_code: str
@@ -35,6 +19,26 @@ class MarkBase(BaseModel):
 
 class MarkCreate(MarkBase):
     student_id: str
+
+class StudentBase(BaseModel):
+    reg_no: str
+    umis_id: str
+    emis_id: str
+    name: str
+    aadhar_number: str
+    phone_number: str
+    address: str
+    admission_year: int
+
+class StudentCreate(StudentBase):
+    pass
+
+class StudentCreateWithMarks(StudentBase):
+    marks: List[MarkCreate] = []
+
+class Student(StudentBase):
+    class Config:
+        from_attributes = True
 
 class Mark(MarkBase):
     id: int
@@ -62,3 +66,14 @@ class TeacherInfo(BaseModel):
     id: int
     username: str
     name: str
+
+class AcademicInfo(BaseModel):
+    admission_year: int
+    graduation_year: int
+    current_semester: int
+    is_graduated: bool
+    total_semesters: int
+    available_semesters: List[int]
+
+class StudentWithAcademicInfo(Student):
+    academic_info: AcademicInfo

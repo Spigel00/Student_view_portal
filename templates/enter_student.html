@@ -1,0 +1,356 @@
+{% extends "base.html" %}
+
+{% block title %}Enter Student Info - Student Portal{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="form-container">
+        <header class="form-header">
+            <h1>Enter Student Information</h1>
+            <div class="header-actions">
+                <a href="/dashboard" class="back-btn">← Back to Dashboard</a>
+                <a href="/logout" class="logout-btn">Logout</a>
+            </div>
+        </header>
+        
+        {% if error %}
+        <div class="error-message">
+            {{ error }}
+        </div>
+        {% endif %}
+        
+        {% if success %}
+        <div class="success-message">
+            {{ success }}
+        </div>
+        {% endif %}
+        
+        <form action="/enter-student" method="post" class="student-form" id="studentForm">
+            <!-- Student Basic Information -->
+            <div class="form-section">
+                <h2>Basic Information</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="reg_no">Registration Number *</label>
+                        <input type="text" id="reg_no" name="reg_no" required placeholder="e.g., REG001">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="umis_id">UMIS ID *</label>
+                        <input type="text" id="umis_id" name="umis_id" required placeholder="e.g., UMIS001">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="emis_id">EMIS ID *</label>
+                        <input type="text" id="emis_id" name="emis_id" required placeholder="e.g., EMIS001">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="name">Full Name *</label>
+                        <input type="text" id="name" name="name" required placeholder="Student's full name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="aadhar_number">Aadhar Number *</label>
+                        <input type="text" id="aadhar_number" name="aadhar_number" required 
+                               placeholder="12-digit Aadhar number" pattern="\d{12}" maxlength="12">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="phone_number">Phone Number *</label>
+                        <input type="text" id="phone_number" name="phone_number" required 
+                               placeholder="10-digit mobile number" pattern="\d{10}" maxlength="10">
+                    </div>
+                </div>
+                
+                    <div class="form-group">
+                        <label for="address">Address *</label>
+                        <textarea id="address" name="address" required rows="3" 
+                                  placeholder="Complete address"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="admission_year">Admission Year *</label>
+                        <input type="number" id="admission_year" name="admission_year" required 
+                               min="2020" max="2030" placeholder="e.g., 2023" 
+                               onchange="calculateCurrentSemester()">
+                    </div>
+                </div>
+                
+                <div class="academic-info" id="academicInfo" style="display: none;">
+                    <h3>Academic Information</h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <label>Current Semester:</label>
+                            <span id="currentSemester">-</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Graduation Year:</label>
+                            <span id="graduationYear">-</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Semesters Available for Entry:</label>
+                            <span id="availableSemesters">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Semester-wise Marks -->
+            <div class="form-section">
+                <h2>Academic Records</h2>
+                <div class="semesters-container" id="semestersContainer">
+                    <div class="semester-placeholder">
+                        <p>Please enter admission year to see available semesters for marks entry.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Overall Summary -->
+            <div class="form-section">
+                <h2>Overall Performance</h2>
+                <div class="overall-summary">
+                    <div class="summary-grid">
+                        <div class="summary-card">
+                            <label>Total Marks (All Semesters)</label>
+                            <span id="overall_total">0</span>/2100
+                        </div>
+                        <div class="summary-card">
+                            <label>Overall Percentage</label>
+                            <span id="overall_percentage">0</span>%
+                        </div>
+                        <div class="summary-card">
+                            <label>Overall CGPA</label>
+                            <span id="overall_cgpa">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Submit Button -->
+            <div class="form-actions">
+                <button type="button" onclick="calculateOverall()" class="calculate-btn">
+                    Calculate Performance
+                </button>
+                <button type="submit" class="submit-btn">
+                    Save Student Information
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+let currentAvailableSemesters = [];
+
+function calculateCurrentSemester() {
+    const admissionYear = parseInt(document.getElementById('admission_year').value);
+    if (!admissionYear || admissionYear < 2020 || admissionYear > 2030) {
+        document.getElementById('academicInfo').style.display = 'none';
+        document.getElementById('semestersContainer').innerHTML = 
+            '<div class="semester-placeholder"><p>Please enter a valid admission year to see available semesters.</p></div>';
+        return;
+    }
+    
+    // Calculate current semester based on admission year
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth() + 1; // JavaScript months are 0-indexed
+    
+    let yearsSinceAdmission = currentYear - admissionYear;
+    let semesterInYear = (currentMonth >= 7) ? 1 : 2; // July-Dec = 1, Jan-Jun = 2
+    
+    if (currentMonth <= 6 && yearsSinceAdmission > 0) {
+        yearsSinceAdmission -= 1;
+    }
+    
+    const currentSemester = Math.min((yearsSinceAdmission * 2) + semesterInYear, 6);
+    const graduationYear = admissionYear + 3;
+    const availableSemesters = [];
+    
+    for (let i = 1; i <= currentSemester; i++) {
+        availableSemesters.push(i);
+    }
+    
+    // Update academic info display
+    document.getElementById('currentSemester').textContent = currentSemester;
+    document.getElementById('graduationYear').textContent = graduationYear;
+    document.getElementById('availableSemesters').textContent = availableSemesters.join(', ');
+    document.getElementById('academicInfo').style.display = 'block';
+    
+    // Generate semester forms
+    generateSemesterForms(availableSemesters);
+    currentAvailableSemesters = availableSemesters;
+}
+
+function generateSemesterForms(availableSemesters) {
+    const container = document.getElementById('semestersContainer');
+    
+    if (availableSemesters.length === 0) {
+        container.innerHTML = '<div class="semester-placeholder"><p>No semesters available for marks entry yet.</p></div>';
+        return;
+    }
+    
+    let html = '';
+    
+    availableSemesters.forEach(semester => {
+        html += `
+            <div class="semester-section">
+                <h3>Semester ${semester}</h3>
+                <div class="subjects-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Subject Code</th>
+                                <th>Subject Name</th>
+                                <th>Internal 1 (0-50)</th>
+                                <th>Internal 2 (0-50)</th>
+                                <th>Best of 2</th>
+                            </tr>
+                        </thead>
+                        <tbody>`;
+        
+        for (let subject = 1; subject <= 7; subject++) {
+            html += `
+                            <tr>
+                                <td>
+                                    <input type="text" 
+                                           name="semester_${semester}_subject_${subject}_code" 
+                                           placeholder="CS${semester}0${subject}" 
+                                           required>
+                                </td>
+                                <td>
+                                    <input type="text" 
+                                           name="semester_${semester}_subject_${subject}_name" 
+                                           placeholder="Subject Name" 
+                                           required>
+                                </td>
+                                <td>
+                                    <input type="number" 
+                                           name="semester_${semester}_subject_${subject}_internal1" 
+                                           min="0" max="50" step="0.1" 
+                                           placeholder="0-50" 
+                                           required
+                                           onchange="calculateBest(${semester}, ${subject})">
+                                </td>
+                                <td>
+                                    <input type="number" 
+                                           name="semester_${semester}_subject_${subject}_internal2" 
+                                           min="0" max="50" step="0.1" 
+                                           placeholder="0-50" 
+                                           required
+                                           onchange="calculateBest(${semester}, ${subject})">
+                                </td>
+                                <td>
+                                    <span class="best-marks" 
+                                          id="best_${semester}_${subject}">-</span>
+                                </td>
+                            </tr>`;
+        }
+        
+        html += `
+                        </tbody>
+                    </table>
+                    
+                    <div class="semester-summary">
+                        <div class="summary-item">
+                            <label>Total Marks:</label>
+                            <span id="total_${semester}">0</span>/350
+                        </div>
+                        <div class="summary-item">
+                            <label>Percentage:</label>
+                            <span id="percentage_${semester}">0</span>%
+                        </div>
+                        <div class="summary-item">
+                            <label>CGPA:</label>
+                            <span id="cgpa_${semester}">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+    });
+    
+    container.innerHTML = html;
+}
+
+function calculateBest(semester, subject) {
+    const internal1 = parseFloat(document.querySelector(`input[name="semester_${semester}_subject_${subject}_internal1"]`).value) || 0;
+    const internal2 = parseFloat(document.querySelector(`input[name="semester_${semester}_subject_${subject}_internal2"]`).value) || 0;
+    const best = Math.max(internal1, internal2);
+    
+    document.getElementById(`best_${semester}_${subject}`).textContent = best.toFixed(1);
+    
+    // Auto-calculate semester totals
+    calculateSemesterTotals(semester);
+}
+
+function calculateSemesterTotals(semester) {
+    let total = 0;
+    for (let subject = 1; subject <= 7; subject++) {
+        const bestSpan = document.getElementById(`best_${semester}_${subject}`);
+        const bestValue = parseFloat(bestSpan.textContent) || 0;
+        total += bestValue;
+    }
+    
+    const percentage = (total / 350) * 100;
+    const cgpa = percentage / 9.5;
+    
+    document.getElementById(`total_${semester}`).textContent = total.toFixed(1);
+    document.getElementById(`percentage_${semester}`).textContent = percentage.toFixed(2);
+    document.getElementById(`cgpa_${semester}`).textContent = cgpa.toFixed(2);
+}
+
+function calculateOverall() {
+    let overallTotal = 0;
+    let semesterCount = 0;
+    
+    currentAvailableSemesters.forEach(semester => {
+        const totalElement = document.getElementById(`total_${semester}`);
+        const semesterTotal = parseFloat(totalElement.textContent) || 0;
+        if (semesterTotal > 0) {
+            overallTotal += semesterTotal;
+            semesterCount++;
+        }
+    });
+    
+    const overallPercentage = semesterCount > 0 ? (overallTotal / (semesterCount * 350)) * 100 : 0;
+    const overallCgpa = overallPercentage / 9.5;
+    
+    document.getElementById('overall_total').textContent = overallTotal.toFixed(1);
+    document.getElementById('overall_percentage').textContent = overallPercentage.toFixed(2);
+    document.getElementById('overall_cgpa').textContent = overallCgpa.toFixed(2);
+}
+
+// Validate form before submission
+document.getElementById('studentForm').addEventListener('submit', function(e) {
+    // Basic validation
+    const admissionYear = document.getElementById('admission_year').value;
+    const regNo = document.getElementById('reg_no').value.trim();
+    const umisId = document.getElementById('umis_id').value.trim();
+    const emisId = document.getElementById('emis_id').value.trim();
+    
+    if (!admissionYear || !regNo || !umisId || !emisId) {
+        alert('Please fill in all required fields.');
+        e.preventDefault();
+        return;
+    }
+    
+    // Check if at least one semester has marks
+    let hasMarks = false;
+    currentAvailableSemesters.forEach(semester => {
+        const totalElement = document.getElementById(`total_${semester}`);
+        if (parseFloat(totalElement.textContent) > 0) {
+            hasMarks = true;
+        }
+    });
+    
+    if (!hasMarks && currentAvailableSemesters.length > 0) {
+        alert('Please enter marks for at least one semester.');
+        e.preventDefault();
+        return;
+    }
+    
+    calculateOverall();
+});
+</script>
+{% endblock %}
